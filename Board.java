@@ -22,6 +22,8 @@ public class Board implements ActionListener
     GridLayout layout = new GridLayout(8,8); // create an 8x8 grid layout
     boolean isPressed = false;
     int arrayPosition;
+    int yPosition = arrayPosition/8;
+    int xPosition = (arrayPosition%8)*8;
     Square[] square = new Square[64]; // Init 64 squares
     public Board()
     {
@@ -91,40 +93,34 @@ public class Board implements ActionListener
         for(int i = 0;i<64;i++)
         {
             square[i].button.addActionListener(this);
-            System.out.println(i);
-            System.out.println(square[i].getxPosition());
-            System.out.println(square[i].getyPosition());
-            System.out.println(" ");
-
         }
         a.setVisible(true); // Make layout visible
     }
+
+
     public void actionPerformed(ActionEvent e)
     {
-        System.out.println("REEE");
         for(int i = 0;i<64;i++)
         {
             if (e.getSource() == square[i].button)
             {
                 if(isPressed == false)
                     {
-                        if(square[i].canMoveTo(square[i], this) == true)
+                        if(square[i].canMove() == true)
                         {
+                            square[i].SetPosibleMoves(this);
                             isPressed = true;
                             arrayPosition = square[i].getArrayPosition();
                         }
                     }
                 else 
                 {
-                    System.out.println(square[arrayPosition].getArrayPosition());
-                    System.out.println(square[i].getArrayPosition());
-                    if(square[arrayPosition].canMoveTo(square[i],this) == true)
+                    if(square[arrayPosition].canMoveTo(square[i]) == true)
                     {
-                        System.out.println(isPressed);
-                        System.out.println(arrayPosition);
+                        setToWhite(square[arrayPosition].getcanMoveTo(0));
+                        setToWhite(square[arrayPosition].getcanMoveTo(1));
                         square[arrayPosition].moveTo(square[i]);
                         isPressed = false;
-                        updateScreen();
                     }
                 }
             }
@@ -145,6 +141,10 @@ public class Board implements ActionListener
     public void updateScreen()
     {
         a.setVisible(true); // Make layout visible
+    }
+    public Square getSquare(int i)
+    {
+        return square[i];
     }
 
 }

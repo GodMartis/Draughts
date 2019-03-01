@@ -29,10 +29,11 @@ public class Square
     public static final String RED = "RED";
 
     private String pieceType;
-    private int xPosition;
-    private int yPosition;
     private int arrayPosition;
+    private int yPosition = arrayPosition/8;
+    private int xPosition = (arrayPosition%8)*8;
     JButton button;
+    private int[] canMoveTo = new int[2];
     /**
     * Square constructor
     * @param color is the color of the square
@@ -51,20 +52,34 @@ public class Square
     /**
      * @return the xPosition
      */
-    public int getxPosition() {
+    public int getxPosition() 
+    {
         return xPosition;
     }
     /**
      * @return the yPosition
      */
-    public int getyPosition() {
+    public int getyPosition() 
+    {
         return yPosition;
     }
     /**
      * @return the arrayPosition
      */
-    public int getArrayPosition() {
+    public int getArrayPosition() 
+    {
         return arrayPosition;
+    }
+     /**
+     * @return the pieceType
+     */
+    public String getPieceType()
+    {
+        return pieceType;
+    }
+    public int getcanMoveTo(int n)
+    {
+        return canMoveTo[n];
     }
     void moveTo(Square square)
     {
@@ -77,40 +92,75 @@ public class Square
         pieceType = NONE;
         button.setIcon(white);
     }
-    boolean canMoveTo(Square square, Board board)
+    void SetPosibleMoves(Board board)
     {
-        int canArrayLocation1, canArrayLocation2;
-
+        int y = 1; //set for red piece
+        int x = -1;
         if(pieceType==WHITE)
         {
-            canArrayLocation1 = getArrayPosition()-7;
-            canArrayLocation2 = getArrayPosition()-9;
+            y = -1;
         }
-        else if(pieceType==RED)
+        if(xPosition == 7 || xPosition == 0)
         {
-            canArrayLocation1 = getArrayPosition()+7;
-            canArrayLocation2 = getArrayPosition()+9;
-        }
-        else return false;
-        if(this==square) 
-        {
-            board.highlight(canArrayLocation1);
-            board.highlight(canArrayLocation2);
-            System.out.println("HIGHLIGHT");
-            return true;
+            if(xPosition == 7)
+                x = -1;
+            else if(xPosition == 0)
+                x = 1;
+            canMoveTo[0] = (yPosition+y)*8+xPosition+x;
+            canMoveTo[1] = canMoveTo[0];
         }
         else
         {
-            if(square.getArrayPosition() == canArrayLocation1 || square.getArrayPosition() == canArrayLocation2) 
-                {
-                    board.setToWhite(canArrayLocation1);
-                    board.setToWhite(canArrayLocation2);
-                    return true;
-                }
-            else 
+            canMoveTo[0] = (yPosition+y)*8+xPosition+1;
+            canMoveTo[1] = (yPosition+y)*8+xPosition-1;
+        }
+        for(int i = 0;i<2;i++)
+        {
+            if(board.getSquare(canMoveTo[i]).getPieceType() !=NONE)
+            {
+                int xpos;
+                int ypos;
+                xpos = board.getSquare(canMoveTo[i]).getxPosition();
+                ypos = board.getSquare(canMoveTo[i]).getyPosition();
+                xpos = xpos - (xPosition - xpos);
+                ypos = ypos - (yPosition - ypos);
+                canMoveTo[i] = (ypos)*8+xpos;
+            }
+        }
+        board.highlight(canMoveTo[0]);
+        board.highlight(canMoveTo[1]);
+    }
+
+
+    boolean canMoveTo(Square square)
+    {
+        if(square.getArrayPosition() == canMoveTo[0] || square.getArrayPosition() == canMoveTo[1]) 
+        {
+            return true;
+        }
+        else 
+            return false;
+    }
+
+    boolean canMove()
+    {
+        int y;
+        if(pieceType==WHITE)
+            {
+                y=0;
+            }
+        else if(pieceType==RED)
+            {
+                y=7;
+            }
+        else 
+            return false;
+
+        if(xPosition == 7 || xPosition == 0)
+        {
+            if (yPosition == y)
                 return false;
         }
-
-
+        return true;
     }
 }
