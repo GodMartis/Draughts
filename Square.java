@@ -28,6 +28,7 @@ public class Square
     public static final String WHITE = "WHITE";
     public static final String RED = "RED";
 
+    private boolean highlighted;
     private String pieceType;
     private int arrayPosition;
     private int yPosition = arrayPosition/8;
@@ -81,16 +82,37 @@ public class Square
     {
         return canMoveTo[n];
     }
-    void moveTo(Square square)
+    public void setHighlighted(boolean highlighted)
+    {
+        this.highlighted = highlighted;
+    }
+    public void setPiece(String pieceType)
+    {
+        this.pieceType = pieceType;
+    }
+    public boolean gethighlighted()
+    {
+        return highlighted;
+    }
+    void moveTo(Square square,Board board)
     {
         ImageIcon white = new ImageIcon("img/empty.png"); // Create white ImageIcon
-        ImageIcon black = new ImageIcon("img/empty2.png"); // Create black ImageIcon
-        ImageIcon redPiece = new ImageIcon("img/red.png");
-        ImageIcon whitePiece = new ImageIcon("img/white.png");
         square.pieceType = pieceType;
         square.button.setIcon(button.getIcon());
         pieceType = NONE;
-        button.setIcon(white);
+        board.setToWhite(arrayPosition);
+        if(Math.abs(xPosition-square.getxPosition()) > 1)
+        {
+            int xpos;
+            int ypos;
+            xpos = square.getxPosition();
+            ypos = square.getyPosition();
+            xpos = (xpos+xPosition)/2;
+            ypos = (ypos+yPosition)/2;
+            int piecePosition = ypos*8+xpos;
+            board.setToWhite(piecePosition);
+            board.getSquare(piecePosition).setPiece("NONE");
+        }
     }
     void SetPosibleMoves(Board board)
     {
@@ -114,6 +136,7 @@ public class Square
             canMoveTo[0] = (yPosition+y)*8+xPosition+1;
             canMoveTo[1] = (yPosition+y)*8+xPosition-1;
         }
+        boolean change = false;
         for(int i = 0;i<2;i++)
         {
             if(board.getSquare(canMoveTo[i]).getPieceType() !=NONE)
@@ -125,18 +148,25 @@ public class Square
                 xpos = xpos - (xPosition - xpos);
                 ypos = ypos - (yPosition - ypos);
                 canMoveTo[i] = (ypos)*8+xpos;
+                if(xpos>7 || xpos<0 || ypos>7 || xpos<0)
+                if(i==1)
+                    canMoveTo[1] = canMoveTo[0];
+                else
+                    change = true;
             }
         }
-        board.highlight(canMoveTo[0]);
-        board.highlight(canMoveTo[1]);
+        if(change == true)
+            canMoveTo[0] = canMoveTo[1];
     }
-
 
     boolean canMoveTo(Square square)
     {
         if(square.getArrayPosition() == canMoveTo[0] || square.getArrayPosition() == canMoveTo[1]) 
         {
-            return true;
+            if(square.getPieceType() == NONE)
+                return true;
+            else
+                return false;
         }
         else 
             return false;

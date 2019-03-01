@@ -34,10 +34,6 @@ public class Board implements ActionListener
         a.setSize(800,800); // Change window size
         a.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // exit program on close
         a.setResizable(false); // Make the window non-resizable
-        ImageIcon white = new ImageIcon("img/empty.png"); // Create white ImageIcon
-        ImageIcon black = new ImageIcon("img/empty2.png"); // Create black ImageIcon
-        ImageIcon redPiece = new ImageIcon("img/red.png");
-        ImageIcon whitePiece = new ImageIcon("img/white.png");
     }
     /**
     * Creates 64 squares, sets their colour and arranges them in an 8x8 grid.
@@ -109,19 +105,30 @@ public class Board implements ActionListener
                         if(square[i].canMove() == true)
                         {
                             square[i].SetPosibleMoves(this);
-                            isPressed = true;
-                            arrayPosition = square[i].getArrayPosition();
+                            for(int a = 0;a<2;a++)
+                            {
+                                if(square[i].canMoveTo(getSquare(square[i].getcanMoveTo(a))) == true)
+                                {
+                                    isPressed = true;
+                                    arrayPosition = square[i].getArrayPosition();
+                                    highlight(square[i].getcanMoveTo(a));  
+                                }
+                            }
                         }
                     }
                 else 
                 {
+                    for(int a = 0;a<2;a++)
+                        if(square[square[arrayPosition].getcanMoveTo(a)].gethighlighted() == true)
+                        {
+                            setToWhite(square[arrayPosition].getcanMoveTo(a));
+                            square[square[arrayPosition].getcanMoveTo(a)].setPiece("NONE");
+                        }
                     if(square[arrayPosition].canMoveTo(square[i]) == true)
                     {
-                        setToWhite(square[arrayPosition].getcanMoveTo(0));
-                        setToWhite(square[arrayPosition].getcanMoveTo(1));
-                        square[arrayPosition].moveTo(square[i]);
-                        isPressed = false;
+                        square[arrayPosition].moveTo(square[i],this);
                     }
+                    isPressed = false;
                 }
             }
             
@@ -130,11 +137,13 @@ public class Board implements ActionListener
     }
     public void highlight(int arrayLocation)
     {
+        square[arrayLocation].setHighlighted(true);
         ImageIcon selected = new ImageIcon("img/selected.png");
         square[arrayLocation].button.setIcon(selected);
     }
     public void setToWhite(int arrayLocation)
     {
+        square[arrayLocation].setHighlighted(false);
         ImageIcon white = new ImageIcon("img/empty.png");
         square[arrayLocation].button.setIcon(white);
     }
