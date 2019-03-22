@@ -19,8 +19,8 @@ public class Square
     /**
      * Square constructor
      * @param color is the color of the square
-     * @param x is the x position of the square
-     * @param y is the y position of the square
+     * @param xPosition is the x position of the square
+     * @param yPosition is the y position of the square
      * @param arrayPosition position of square in the square array
      * @param pieceType piece type of piece on square
      */
@@ -39,9 +39,9 @@ public class Square
      * @param board board object
      * @param turn_pieceType piece type of piece which moves next
      */
-    void moveTo(Square square,Board board,String turn_pieceType)
+    void moveTo(Square square,Board board,String turnPieceType)
     {
-        board.set_turn_pieceType(pieceType);
+        board.setTurnPieceType(pieceType);
         square.pieceType = pieceType;
         square.button.setIcon(button.getIcon());
         pieceType = "NONE";
@@ -65,29 +65,29 @@ public class Square
                 square.SetPosibleMoves(board);
         }
         // check if square can jump after this jump. Force player to jump if possible.
-        if(square.getJump(0) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))))
+        if(square.getJump(0) == true && square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))) && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
         {
-            board.setarrayPosition(square.getArrayPosition());
+            board.setArrayPosition(square.getArrayPosition());
+            board.setLock(true);
             board.highlight(square.getcanMoveTo(0));
-            board.setlock(true);
+            board.highlight(square.getcanMoveTo(1));
+        }
+        else if(square.getJump(0) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))))
+        {
+            board.setArrayPosition(square.getArrayPosition());
+            board.highlight(square.getcanMoveTo(0));
+            board.setLock(true);
         }
         else if(square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
         {
-            board.setarrayPosition(square.getArrayPosition());
+            board.setArrayPosition(square.getArrayPosition());
             board.highlight(square.getcanMoveTo(1));
-            board.setlock(true);
-        }
-        else if(square.getJump(0) == true && square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))) && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
-        {
-            board.setarrayPosition(square.getArrayPosition());
-            board.setlock(true);
-            board.highlight(square.getcanMoveTo(0));
-            board.highlight(square.getcanMoveTo(1));
+            board.setLock(true);
         }
         else
         {
-            board.setlock(false);
-            board.setisPressed(false);
+            board.setLock(false);
+            board.setIsPressed(false);
         }
     }
     /**

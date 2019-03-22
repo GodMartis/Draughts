@@ -15,7 +15,7 @@ public class Board implements ActionListener
     private boolean isPressed = false;
     private int arrayPosition; // array position of the selected square
     private Square[] square = new Square[64];
-    private String turn_pieceType = "RED"; // which piece moves next (Whites start, so reds move next)
+    private String turnPieceType = "RED"; // which piece moves next (Whites start, so reds move next)
     private boolean lock = false; // Is movement locked to a selected square
 
     /**
@@ -138,7 +138,7 @@ public class Board implements ActionListener
     public void firstClick(int i)
     {
         isPressed=false;
-        if(square[i].canMove(turn_pieceType,this) == true)
+        if(square[i].canMove(turnPieceType,this) == true)
         {
             square[i].SetPosibleMoves(this);
             for(int a = 0;a<2;a++)
@@ -172,9 +172,13 @@ public class Board implements ActionListener
             }
         if(square[arrayPosition].canMoveTo(square[i]) == true && isHighlighted == true)
         {
-            square[arrayPosition].moveTo(square[i],this,turn_pieceType);
+            if(lock == true)
+                for(int a=0;a<2;a++)
+                    if(square[square[arrayPosition].getcanMoveTo(a)].gethighlighted() == true)
+                        setToWhite(square[arrayPosition].getcanMoveTo(a));
+            square[arrayPosition].moveTo(square[i],this,turnPieceType);
         }
-        else if(lock==false)
+        else if(lock == false)
             isPressed = false;
     }
 
@@ -193,17 +197,17 @@ public class Board implements ActionListener
 
     /**
      * Set which player goes next
-     * @param pieceType piece which goes next turn
+     * @param turnPieceType piece which goes next turn
      */
-    public void set_turn_pieceType(String turn_pieceType)
+    public void setTurnPieceType(String turnPieceType)
     {
-        this.turn_pieceType = turn_pieceType;
+        this.turnPieceType = turnPieceType;
     }
     /**
      * Set if square is selected
      * @param isPressed is square selected
      */
-    public void setisPressed(boolean isPressed)
+    public void setIsPressed(boolean isPressed)
     {
         this.isPressed = isPressed;
     }
@@ -211,7 +215,7 @@ public class Board implements ActionListener
      * Set array position of pressed square
      * @param arrayPosition array position of pressed square
      */
-    public void setarrayPosition(int arrayPosition)
+    public void setArrayPosition(int arrayPosition)
     {
         this.arrayPosition = arrayPosition;
     }
@@ -219,7 +223,7 @@ public class Board implements ActionListener
      * Set to enable the movemenet of only the selected piece
      * @param lock is movement locked
      */
-    public void setlock(boolean lock)
+    public void setLock(boolean lock)
     {
         this.lock = lock;
     }
