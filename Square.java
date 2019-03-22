@@ -51,13 +51,13 @@ public class Square
         // perform jump
         if(Math.abs(xPosition-square.getxPosition()) > 1)
         {
-            int xpos;
+            int xPos;
             int ypos;
-            xpos = square.getxPosition();
+            xPos = square.getxPosition();
             ypos = square.getyPosition();
-            xpos = (xpos+xPosition)/2;
+            xPos = (xPos+xPosition)/2;
             ypos = (ypos+yPosition)/2;
-            int piecePosition = ypos*8+xpos;
+            int piecePosition = ypos*8+xPos;
             board.setToWhite(piecePosition);
             board.getSquare(piecePosition).setPieceType("NONE");
             // check if piece can move after this move
@@ -126,14 +126,14 @@ public class Square
             if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType && yPosition != disableY)
             {
                 int xpos;
-                int ypos;
+                int yPos;
                 xpos = board.getSquare(canMoveTo[i]).getxPosition();
-                ypos = board.getSquare(canMoveTo[i]).getyPosition();
+                yPos = board.getSquare(canMoveTo[i]).getyPosition();
                 xpos = xpos - (xPosition - xpos);
-                ypos = ypos - (yPosition - ypos);
-                canMoveTo[i] = (ypos)*8+xpos;
+                yPos = yPos - (yPosition - yPos);
+                canMoveTo[i] = (yPos)*8+xpos;
                 jump[i] = true;
-                if(xpos>7 || xpos<0 || ypos>7 || xpos<0)
+                if(xpos>7 || xpos<0 || yPos>7 || xpos<0)
                     {
                     if(i==1)
                         canMoveTo[1] = canMoveTo[0];
