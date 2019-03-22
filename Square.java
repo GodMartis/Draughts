@@ -148,8 +148,8 @@ public class Square
         }
         if(change == true)
             canMoveTo[0] = canMoveTo[1];
-        if(jump[0] == true && jump[1] == false) canMoveTo[1] = canMoveTo[0];
-        if(jump[1] == true && jump[0] == false) canMoveTo[0] = canMoveTo[1];
+        if(jump[0] == true && jump[1] == false && canMoveTo(board.getSquare(canMoveTo[0])) == true) canMoveTo[1] = canMoveTo[0];
+        if(jump[1] == true && jump[0] == false && canMoveTo(board.getSquare(canMoveTo[1])) == true) canMoveTo[0] = canMoveTo[1];
 
     }
     /**
