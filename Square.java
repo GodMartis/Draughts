@@ -97,7 +97,7 @@ public class Square
     void SetPosibleMoves(Board board)
     {
         int y = 1; //set for red piece
-        int x = -1; //-1 if xPosition is 0
+        int x = 1; //-1 if xPosition is 0
         int disableY = 6;
         // wites move up, reds move down
         if(pieceType=="WHITE")
