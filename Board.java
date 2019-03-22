@@ -139,19 +139,24 @@ public class Board implements ActionListener
     public void firstClick(int i)
     {
         isPressed=false;
-        if(square[i].canMove(turn_pieceType,this) == true)
+        try
         {
-            square[i].SetPosibleMoves(this);
-            for(int a = 0;a<2;a++)
+            if(square[i].canMove(turn_pieceType,this) == true)
             {
-                if(square[i].canMoveTo(getSquare(square[i].getcanMoveTo(a))) == true)
+                square[i].SetPosibleMoves(this);
+                for(int a = 0;a<2;a++)
                 {
-                    isPressed = true;
-                    arrayPosition = square[i].getArrayPosition();
-                    highlight(square[i].getcanMoveTo(a));  
+                    if(square[i].canMoveTo(getSquare(square[i].getcanMoveTo(a))) == true)
+                    {
+                        isPressed = true;
+                        arrayPosition = square[i].getArrayPosition();
+                        highlight(square[i].getcanMoveTo(a));  
+                    }
                 }
             }
         }
+        catch(Exception e) {
+          }
     }
     /**
      * Moves piece to selected area(if possible)
@@ -188,6 +193,7 @@ public class Board implements ActionListener
     public Square getSquare(int i)
     {
         return square[i];
+
     }
 
         //-- Mutators --//

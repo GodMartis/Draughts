@@ -41,50 +41,58 @@ public class Square
      */
     void moveTo(Square square,Board board,String turn_pieceType)
     {
-        board.set_turn_pieceType(pieceType);
-        square.pieceType = pieceType;
-        square.button.setIcon(button.getIcon());
-        pieceType = "NONE";
-        board.setToWhite(arrayPosition);
-        square.setJump(false, 0);
-        square.setJump(false, 1);
-        // perform jump
-        if(Math.abs(xPosition-square.getxPosition()) > 1)
+        try
         {
-            int xpos;
-            int ypos;
-            xpos = square.getxPosition();
-            ypos = square.getyPosition();
-            xpos = (xpos+xPosition)/2;
-            ypos = (ypos+yPosition)/2;
-            int piecePosition = ypos*8+xpos;
-            board.setToWhite(piecePosition);
-            board.getSquare(piecePosition).setPieceType("NONE");
-            // check if piece can move after this move
-            if(square.canMove("NULL",board)==true && square.getyPosition() !=0 && square.getyPosition() != 7)
-                square.SetPosibleMoves(board);
+            board.set_turn_pieceType(pieceType);
+            square.pieceType = pieceType;
+            square.button.setIcon(button.getIcon());
+            pieceType = "NONE";
+            board.setToWhite(arrayPosition);
+            square.setJump(false, 0);
+            square.setJump(false, 1);
+            // perform jump
+            if(Math.abs(xPosition-square.getxPosition()) > 1)
+            {
+                int xpos;
+                int ypos;
+                xpos = square.getxPosition();
+                ypos = square.getyPosition();
+                xpos = (xpos+xPosition)/2;
+                ypos = (ypos+yPosition)/2;
+                int piecePosition = ypos*8+xpos;
+                board.setToWhite(piecePosition);
+                board.getSquare(piecePosition).setPieceType("NONE");
+                // check if piece can move after this move
+                if(square.canMove("NULL",board)==true)
+                    square.SetPosibleMoves(board);
+            }
+            // check if square can jump after this jump. Force player to jump if possible.
+            if(square.getJump(0) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))))
+            {
+                board.setarrayPosition(square.getArrayPosition());
+                board.highlight(square.getcanMoveTo(0));
+                board.setlock(true);
+            }
+            else if(square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
+            {
+                board.setarrayPosition(square.getArrayPosition());
+                board.highlight(square.getcanMoveTo(1));
+                board.setlock(true);
+            }
+            else if(square.getJump(0) == true && square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))) && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
+            {
+                board.setarrayPosition(square.getArrayPosition());
+                board.setlock(true);
+                board.highlight(square.getcanMoveTo(0));
+                board.highlight(square.getcanMoveTo(1));
+            }
+            else
+            {
+                board.setlock(false);
+                board.setisPressed(false);
+            }
         }
-        // check if square can jump after this jump. Force player to jump if possible.
-        if(square.getJump(0) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))))
-        {
-            board.setarrayPosition(square.getArrayPosition());
-            board.highlight(square.getcanMoveTo(0));
-            board.setlock(true);
-        }
-        else if(square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
-        {
-            board.setarrayPosition(square.getArrayPosition());
-            board.highlight(square.getcanMoveTo(1));
-            board.setlock(true);
-        }
-        else if(square.getJump(0) == true && square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))) && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
-        {
-            board.setarrayPosition(square.getArrayPosition());
-            board.setlock(true);
-            board.highlight(square.getcanMoveTo(0));
-            board.highlight(square.getcanMoveTo(1));
-        }
-        else
+        catch(Exception e)
         {
             board.setlock(false);
             board.setisPressed(false);
@@ -98,12 +106,10 @@ public class Square
     {
         int y = 1; //set for red piece
         int x = -1; //-1 if xPosition is 0
-        int disableY = 6;
         // wites move up, reds move down
         if(pieceType=="WHITE")
         {
             y = -1;
-            disableY = 1;
         }
         // only 1 possible move if piece is on the left or right edge of the board
         if(xPosition == 7 || xPosition == 0)
@@ -123,7 +129,7 @@ public class Square
         for(int i=0;i<2;i++)
         {
 
-            if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType && yPosition != disableY)
+            if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType)
             {
                 int xpos;
                 int ypos;
@@ -133,19 +139,8 @@ public class Square
                 ypos = ypos - (yPosition - ypos);
                 canMoveTo[i] = (ypos)*8+xpos;
                 jump[i] = true;
-                if(xpos>7 || xpos<0 || ypos>7 || xpos<0)
-                    {
-                    if(i==1)
-                        canMoveTo[1] = canMoveTo[0];
-                    else
-                        change = true;
-                    jump[i] = false;
-                    }
-
             }
         }
-        if(change == true)
-            canMoveTo[0] = canMoveTo[1];
     }
     /**
      * Return true if piece can move to a selected square
