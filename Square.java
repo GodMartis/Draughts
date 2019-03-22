@@ -24,12 +24,12 @@ public class Square
      * @param arrayPosition position of square in the square array
      * @param pieceType piece type of piece on square
      */
-    public Square(ImageIcon color, int x, int y,int arrayPosition, String pieceType)
+    public Square(ImageIcon color, int xPosition, int yPosition,int arrayPosition, String pieceType)
     {
         button = new JButton(color);
         button.setIcon(color);
-        xPosition = x;
-        yPosition = y;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
         this.arrayPosition = arrayPosition;
         this.pieceType = pieceType;
     }
@@ -120,7 +120,7 @@ public class Square
         }
         boolean change = false;
         // determine whether possible move location contains a square, if it does, calculate possible jump
-        for(int i = 0;i<2;i++)
+        for(int i=0;i<2;i++)
         {
 
             if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType && yPosition != disableY)
@@ -241,7 +241,9 @@ public class Square
     {
         return highlighted;
     }
+
         //-- Mutators --//
+
     /**
      * Set which piece is on square
      * @param pieceType type of piece (WHITE, RED, NONE)
