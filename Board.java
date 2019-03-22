@@ -137,8 +137,9 @@ public class Board implements ActionListener
      */
     public void firstClick(int i)
     {
+        checkForJumps();
         isPressed=false;
-        if(square[i].canMove(turnPieceType,this) == true)
+        if(square[i].canMove(turnPieceType,this) == true && square[i].getMovementLocked() == false)
         {
             square[i].SetPosibleMoves(this);
             for(int a = 0;a<2;a++)
@@ -180,6 +181,36 @@ public class Board implements ActionListener
         }
         else if(lock == false)
             isPressed = false;
+    }
+    /**
+     * Checks if any jumps are available. If there are, force to jump.
+     */
+    public void checkForJumps()
+    {
+        boolean jumpsAvailable = false;
+        for(int a=0;a<64;a++)
+        {
+            square[a].setMovementLocked(true);
+        }
+        for(int a=0;a<64;a++)
+        {
+            if(square[a].canMove(turnPieceType,this) == true && square[a].getPieceType()!=turnPieceType)
+                {   
+                    square[a].SetPosibleMoves(this);
+                    if( ( square[a].getJump(0) == true && square[a].canMoveTo(square[square[a].getcanMoveTo(0)]) ) || ( square[a].getJump(1) == true && square[a].canMoveTo(square[square[a].getcanMoveTo(1)]) ) )
+                    {
+                        square[a].setMovementLocked(false);
+                        jumpsAvailable = true;
+                    }
+                }
+        }
+        if(jumpsAvailable == false)
+        {
+            for(int a=0;a<64;a++)
+            {
+                square[a].setMovementLocked(false);
+            }
+        }
     }
 
         //-- Accessors --//

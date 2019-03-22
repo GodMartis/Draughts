@@ -7,6 +7,7 @@ import javax.swing.*;
  */
 public class Square
 {
+    private boolean movementLocked = false;
     private boolean highlighted;
     private String pieceType;
     private int arrayPosition;
@@ -99,6 +100,8 @@ public class Square
         int y = 1; //set for red piece
         int x = 1; //-1 if xPosition is 0
         int disableY = 6;
+        jump[0] = false;
+        jump[1] = false;
         // wites move up, reds move down
         if(pieceType=="WHITE")
         {
@@ -123,7 +126,7 @@ public class Square
         for(int i=0;i<2;i++)
         {
 
-            if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType && yPosition != disableY)
+            if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType && yPosition != disableY )
             {
                 int xpos;
                 int yPos;
@@ -141,11 +144,13 @@ public class Square
                         change = true;
                     jump[i] = false;
                     }
-
             }
         }
         if(change == true)
             canMoveTo[0] = canMoveTo[1];
+        if(jump[0] == true && jump[1] == false) canMoveTo[1] = canMoveTo[0];
+        if(jump[1] == true && jump[0] == false) canMoveTo[0] = canMoveTo[1];
+
     }
     /**
      * Return true if piece can move to a selected square
@@ -243,6 +248,13 @@ public class Square
     {
         return highlighted;
     }
+    /**
+     * @return is movement of piece on this square locked
+     */
+    public boolean getMovementLocked()
+    {
+        return movementLocked;
+    }
 
         //-- Mutators --//
 
@@ -270,5 +282,13 @@ public class Square
     public void setJump(boolean jump,int n)
     {
         this.jump[n] = jump;
+    }
+    /**
+     * Set if movement is not locked from this square
+     * @param movementLocked true if locked
+     */
+    public void setMovementLocked(boolean movementLocked)
+    {
+        this.movementLocked = movementLocked;
     }
 }
