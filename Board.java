@@ -34,7 +34,7 @@ public class Board implements ActionListener
     /**
      * Creates 64 squares, sets their colour and arranges them in an 8x8 grid.
      */
-    void loadSquares()
+    public void loadSquares()
     {
         ImageIcon white = new ImageIcon("img/empty.png");
         ImageIcon black = new ImageIcon("img/empty2.png"); 

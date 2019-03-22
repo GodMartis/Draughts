@@ -37,9 +37,9 @@ public class Square
      * Move piece to a selected square and determine whether piece can perform multiple jumps. Force player to make a second jump if multiple jumps are available.
      * @param square square object which piece moves to
      * @param board board object
-     * @param turn_pieceType piece type of piece which moves next
+     * @param turnPieceType piece type of piece which moves next
      */
-    void moveTo(Square square,Board board,String turnPieceType)
+    public void moveTo(Square square,Board board,String turnPieceType)
     {
         board.setTurnPieceType(pieceType);
         square.pieceType = pieceType;
@@ -94,7 +94,7 @@ public class Square
      * Set possible move locations from piece on this square
      * @param board board object
      */
-    void SetPosibleMoves(Board board)
+    public void SetPosibleMoves(Board board)
     {
         int y = 1; //set for red piece
         int x = 1; //-1 if xPosition is 0
@@ -150,8 +150,9 @@ public class Square
     /**
      * Return true if piece can move to a selected square
      * @param square square object
+     * @return true if piece can move to a selected square
      */
-    boolean canMoveTo(Square square)
+    public boolean canMoveTo(Square square)
     {
         if(square.getArrayPosition() == canMoveTo[0] || square.getArrayPosition() == canMoveTo[1]) 
         {
@@ -167,8 +168,9 @@ public class Square
      * Return true if square contains piece which can move
      * @param turn_pieceType piece type of piece which moves next
      * @param board board object
+     * @return true if square contains piece which can move
      */
-    boolean canMove(String turn_pieceType, Board board)
+    public boolean canMove(String turn_pieceType, Board board)
     {
         int y;
         if(pieceType == turn_pieceType)
