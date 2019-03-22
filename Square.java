@@ -1,46 +1,29 @@
-/*
-----board layout----
--   y
-- x 0 1 2 3 4 5 6 7
--   1 * * * * * * *
--   2 * * * * * * *
--   3 * * * * * * *
--   4 * * * * * * *
--   5 * * * * * * *
--   6 * * * * * * *
--   7 * * * * * * *
-*/
-/*
-----board layout----
-0  1  2  3  4  5  6  7
-8  9 10 11 12 13 14 15
-16 17 18 19 20 21 22 23
-24 25 26 27 28 29 30 31
-32 33 34 35 36 37 38 39
-40 41 42 43 44 45 46 47
-48 49 50 51 52 53 54 55
-56 57 58 59 60 61 62 63
-*/
 import javax.swing.*;
+/**
+ * This is the Square class. 
+ * It contains all functions used for piece movement over squares.
+ * All square properties are defined here.
+ * @author Martynas Dabravalskis
+ */
 public class Square
 {
-    public static final String NONE = "NONE";
-    public static final String WHITE = "WHITE";
-    public static final String RED = "RED";
-
     private boolean highlighted;
     private String pieceType;
     private int arrayPosition;
     private int yPosition = arrayPosition/8;
     private int xPosition = (arrayPosition%8)*8;
     JButton button;
+    private boolean[] jump = new boolean[2];
     private int[] canMoveTo = new int[2];
+
     /**
-    * Square constructor
-    * @param color is the color of the square
-    * @param x is the x position of the square
-    * @param y is the y position of the square
-    */
+     * Square constructor
+     * @param color is the color of the square
+     * @param x is the x position of the square
+     * @param y is the y position of the square
+     * @param arrayPosition position of square in the square array
+     * @param pieceType piece type of piece on square
+     */
     public Square(ImageIcon color, int x, int y,int arrayPosition, String pieceType)
     {
         button = new JButton(color);
@@ -51,56 +34,21 @@ public class Square
         this.pieceType = pieceType;
     }
     /**
-     * @return the xPosition
+     * Move piece to a selected square and determine whether piece can perform multiple jumps. Force player to make a second jump if multiple jumps are available.
+     * @param square square object which piece moves to
+     * @param board board object
+     * @param turn_pieceType piece type of piece which moves next
      */
-    public int getxPosition() 
+    void moveTo(Square square,Board board,String turn_pieceType)
     {
-        return xPosition;
-    }
-    /**
-     * @return the yPosition
-     */
-    public int getyPosition() 
-    {
-        return yPosition;
-    }
-    /**
-     * @return the arrayPosition
-     */
-    public int getArrayPosition() 
-    {
-        return arrayPosition;
-    }
-     /**
-     * @return the pieceType
-     */
-    public String getPieceType()
-    {
-        return pieceType;
-    }
-    public int getcanMoveTo(int n)
-    {
-        return canMoveTo[n];
-    }
-    public void setHighlighted(boolean highlighted)
-    {
-        this.highlighted = highlighted;
-    }
-    public void setPiece(String pieceType)
-    {
-        this.pieceType = pieceType;
-    }
-    public boolean gethighlighted()
-    {
-        return highlighted;
-    }
-    void moveTo(Square square,Board board)
-    {
-        ImageIcon white = new ImageIcon("img/empty.png"); // Create white ImageIcon
+        board.set_turn_pieceType(pieceType);
         square.pieceType = pieceType;
         square.button.setIcon(button.getIcon());
-        pieceType = NONE;
+        pieceType = "NONE";
         board.setToWhite(arrayPosition);
+        square.setJump(false, 0);
+        square.setJump(false, 1);
+        // perform jump
         if(Math.abs(xPosition-square.getxPosition()) > 1)
         {
             int xpos;
@@ -111,23 +59,57 @@ public class Square
             ypos = (ypos+yPosition)/2;
             int piecePosition = ypos*8+xpos;
             board.setToWhite(piecePosition);
-            board.getSquare(piecePosition).setPiece("NONE");
+            board.getSquare(piecePosition).setPieceType("NONE");
+            // check if piece can move after this move
+            if(square.canMove("NULL",board)==true && square.getyPosition() !=0 && square.getyPosition() != 7)
+                square.SetPosibleMoves(board);
+        }
+        // check if square can jump after this jump. Force player to jump if possible.
+        if(square.getJump(0) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))))
+        {
+            board.setarrayPosition(square.getArrayPosition());
+            board.highlight(square.getcanMoveTo(0));
+            board.setlock(true);
+        }
+        else if(square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
+        {
+            board.setarrayPosition(square.getArrayPosition());
+            board.highlight(square.getcanMoveTo(1));
+            board.setlock(true);
+        }
+        else if(square.getJump(0) == true && square.getJump(1) == true && square.canMoveTo(board.getSquare(square.getcanMoveTo(0))) && square.canMoveTo(board.getSquare(square.getcanMoveTo(1))))
+        {
+            board.setarrayPosition(square.getArrayPosition());
+            board.setlock(true);
+            board.highlight(square.getcanMoveTo(0));
+            board.highlight(square.getcanMoveTo(1));
+        }
+        else
+        {
+            board.setlock(false);
+            board.setisPressed(false);
         }
     }
+    /**
+     * Set possible move locations from piece on this square
+     * @param board board object
+     */
     void SetPosibleMoves(Board board)
     {
         int y = 1; //set for red piece
-        int x = -1;
-        if(pieceType==WHITE)
+        int x = -1; //-1 if xPosition is 0
+        int disableY = 6;
+        // wites move up, reds move down
+        if(pieceType=="WHITE")
         {
             y = -1;
+            disableY = 1;
         }
+        // only 1 possible move if piece is on the left or right edge of the board
         if(xPosition == 7 || xPosition == 0)
         {
             if(xPosition == 7)
                 x = -1;
-            else if(xPosition == 0)
-                x = 1;
             canMoveTo[0] = (yPosition+y)*8+xPosition+x;
             canMoveTo[1] = canMoveTo[0];
         }
@@ -137,9 +119,11 @@ public class Square
             canMoveTo[1] = (yPosition+y)*8+xPosition-1;
         }
         boolean change = false;
+        // determine whether possible move location contains a square, if it does, calculate possible jump
         for(int i = 0;i<2;i++)
         {
-            if(board.getSquare(canMoveTo[i]).getPieceType() !=NONE)
+
+            if(board.getSquare(canMoveTo[i]).getPieceType() !="NONE" && board.getSquare(canMoveTo[i]).getPieceType() != pieceType && yPosition != disableY)
             {
                 int xpos;
                 int ypos;
@@ -148,22 +132,30 @@ public class Square
                 xpos = xpos - (xPosition - xpos);
                 ypos = ypos - (yPosition - ypos);
                 canMoveTo[i] = (ypos)*8+xpos;
+                jump[i] = true;
                 if(xpos>7 || xpos<0 || ypos>7 || xpos<0)
-                if(i==1)
-                    canMoveTo[1] = canMoveTo[0];
-                else
-                    change = true;
+                    {
+                    if(i==1)
+                        canMoveTo[1] = canMoveTo[0];
+                    else
+                        change = true;
+                    jump[i] = false;
+                    }
+
             }
         }
         if(change == true)
             canMoveTo[0] = canMoveTo[1];
     }
-
+    /**
+     * Return true if piece can move to a selected square
+     * @param square square object
+     */
     boolean canMoveTo(Square square)
     {
         if(square.getArrayPosition() == canMoveTo[0] || square.getArrayPosition() == canMoveTo[1]) 
         {
-            if(square.getPieceType() == NONE)
+            if(square.getPieceType() == "NONE")
                 return true;
             else
                 return false;
@@ -171,26 +163,108 @@ public class Square
         else 
             return false;
     }
-
-    boolean canMove()
+    /**
+     * Return true if square contains piece which can move
+     * @param turn_pieceType piece type of piece which moves next
+     * @param board board object
+     */
+    boolean canMove(String turn_pieceType, Board board)
     {
         int y;
-        if(pieceType==WHITE)
+        if(pieceType == turn_pieceType)
+            return false;
+        if(pieceType=="WHITE")
             {
                 y=0;
             }
-        else if(pieceType==RED)
+        else if(pieceType=="RED")
             {
                 y=7;
             }
         else 
             return false;
-
-        if(xPosition == 7 || xPosition == 0)
-        {
-            if (yPosition == y)
+        if (yPosition == y)
                 return false;
-        }
         return true;
+    }
+
+        //-- Accessors --//
+
+    /**
+     * @return the xPosition of the square
+     */
+    public int getxPosition() 
+    {
+        return xPosition;
+    }
+    /**
+     * @return the yPosition of the square
+     */
+    public int getyPosition() 
+    {
+        return yPosition;
+    }
+    /**
+     * @return the arrayPosition in square array
+     */
+    public int getArrayPosition() 
+    {
+        return arrayPosition;
+    }
+    /**
+     * @param n which possible move to return (2 possible)
+     * @return possible move array location (position in the square array)
+     */
+    public int getcanMoveTo(int n)
+    {
+        return canMoveTo[n];
+    }
+    /**
+     * @return the pieceType
+     */
+    public String getPieceType()
+    {
+        return pieceType;
+    }
+    /**
+     * @param n possible move (1,2)
+     * @return true if jump is performed on move
+     */
+    public boolean getJump(int n)
+    {
+        return jump[n];
+    }
+    /**
+     * @return is square highlighted
+     */
+    public boolean gethighlighted()
+    {
+        return highlighted;
+    }
+        //-- Mutators --//
+    /**
+     * Set which piece is on square
+     * @param pieceType type of piece (WHITE, RED, NONE)
+     */
+    public void setPieceType(String pieceType)
+    {
+        this.pieceType = pieceType;
+    }
+    /**
+     * Set true if square highlighted
+     * @param highlighted true if square highlighted
+     */
+    public void setHighlighted(boolean highlighted)
+    {
+        this.highlighted = highlighted;
+    }
+    /**
+     * Set if piece jumps on possible move
+     * @param jump true if jump
+     * @param n possible move (1,2)
+     */
+    public void setJump(boolean jump,int n)
+    {
+        this.jump[n] = jump;
     }
 }

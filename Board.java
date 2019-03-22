@@ -1,4 +1,230 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.event.ActionListener;
+/**
+ * This is the Board class.
+ * This is the main UI class, which makes calls to the square class when an action is performed.
+ * @author Martynas Dabravalskis
+ */
+public class Board implements ActionListener
+{
+    private JFrame frame = new JFrame();
+    private JPanel panel = new JPanel();
+    private GridLayout layout = new GridLayout(8,8);
+    private boolean isPressed = false;
+    private int arrayPosition; // array position of the selected square
+    private Square[] square = new Square[64];
+    private String turn_pieceType = "RED"; // which piece moves next (Whites start, so reds move next)
+    private boolean lock = false; // Is movement locked to a selected square
+
+    /**
+     * Board constructor. Sets window, layout.
+     */
+    public Board()
+    {
+        frame.setContentPane(panel);
+        panel.setLayout(layout); 
+        frame.setTitle("Draughts");
+        frame.setSize(800,800);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setVisible(true);
+    }
+    /**
+     * Creates 64 squares, sets their colour and arranges them in an 8x8 grid.
+     */
+    void loadSquares()
+    {
+
+        ImageIcon white = new ImageIcon("img/empty.png");
+        ImageIcon black = new ImageIcon("img/empty2.png"); 
+        ImageIcon redPiece = new ImageIcon("img/red.png");
+        ImageIcon whitePiece = new ImageIcon("img/white.png");
+        ImageIcon piece;
+
+        int x = 0;
+        int y = 0;
+        String pieceType = "RED";
+        piece = redPiece;
+        // add all squares to the board
+        for(int i = 0;i<64;i=i+8)
+        {
+            // add a row of squares
+            for(int a = i;a<i+8;a+=2)
+            {
+                square[a] = new Square(black,x,y,a,"NONE"); 
+                panel.add(square[a].button); 
+                square[a+1] = new Square(piece,x+1,y,a+1,pieceType); 
+                panel.add(square[a+1].button); 
+                x+=2; 
+            }
+            x=0;
+            i+=8;
+            if(i>=8*5) 
+            {
+                pieceType = "WHITE";
+                piece = whitePiece;
+            }
+            else if(i>=8*3) 
+            {
+                pieceType = "NONE"; 
+                piece = white;
+            } 
+            // add a row of squares
+            for(int a = i;a<i+8;a+=2)
+            {
+                square[a] = new Square(piece,x,y+1,a,pieceType); 
+                panel.add(square[a].button);
+                square[a+1] = new Square(black,x+1,y+1,a+1,"NONE");
+                panel.add(square[a+1].button); 
+                x+=2; 
+            }
+            x=0;
+            y+=2;
+        }
+        // add an ActionListener to each square
+        for(int i = 0;i<64;i++)
+        {
+            square[i].button.addActionListener(this);
+        }
+        frame.setVisible(true);
+    }
+    /**
+     * Determines which square was clicked on and performs firstClick() or secondClick() depending on whether a piece is already selected
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        for(int i = 0;i<64;i++)
+        {
+            if (e.getSource() == square[i].button)
+            {
+                if(isPressed == false)
+                    {
+                        firstClick(i);
+                    }
+                else 
+                {
+                    secondClick(i);
+                }
+            
+            }
+
+        }
+    }
+    /**
+     * Highlight square
+     * @param arrayLocation square position in array
+     */
+    public void highlight(int arrayLocation)
+    {
+        square[arrayLocation].setHighlighted(true);
+        ImageIcon selected = new ImageIcon("img/selected.png");
+        square[arrayLocation].button.setIcon(selected);
+    }
+    /**
+     * Set square to white
+     * @param arrayLocation square position in array
+     */
+    public void setToWhite(int arrayLocation)
+    {
+        square[arrayLocation].setHighlighted(false);
+        ImageIcon white = new ImageIcon("img/empty.png");
+        square[arrayLocation].button.setIcon(white);
+    }
+    /**
+     * Selects piece to move(if movement is possible) and sets possible moves
+     * @param i square position in array
+     */
+    public void firstClick(int i)
+    {
+        isPressed=false;
+        if(square[i].canMove(turn_pieceType,this) == true)
+        {
+            square[i].SetPosibleMoves(this);
+            for(int a = 0;a<2;a++)
+            {
+                if(square[i].canMoveTo(getSquare(square[i].getcanMoveTo(a))) == true)
+                {
+                    isPressed = true;
+                    arrayPosition = square[i].getArrayPosition();
+                    highlight(square[i].getcanMoveTo(a));  
+                }
+            }
+        }
+    }
+    /**
+     * Moves piece to selected area(if possible)
+     * @param i square position in array
+     */
+    public void secondClick(int i)
+    {
+        boolean isHighlighted = false;
+        for(int a = 0;a<2;a++)
+            if(square[square[arrayPosition].getcanMoveTo(a)].gethighlighted() == true)
+            {
+                if(lock==false)
+                {
+                    setToWhite(square[arrayPosition].getcanMoveTo(a));
+                    square[square[arrayPosition].getcanMoveTo(a)].setPieceType("NONE");
+                }
+                if(square[square[arrayPosition].getcanMoveTo(a)]==square[i])
+                    isHighlighted = true;
+            }
+        if(square[arrayPosition].canMoveTo(square[i]) == true && isHighlighted == true)
+        {
+            square[arrayPosition].moveTo(square[i],this,turn_pieceType);
+        }
+        else if(lock==false)
+            isPressed = false;
+    }
+
+        //-- Accessors --//
+
+    /**
+     * @param i square position in square array
+     * @return square object
+     */
+    public Square getSquare(int i)
+    {
+        return square[i];
+    }
+        //-- Mutators --//
+    /**
+     * Set which player goes next
+     * @param pieceType piece which goes next turn
+     */
+    public void set_turn_pieceType(String pieceType)
+    {
+        turn_pieceType = pieceType;
+    }
+    /**
+     * Set if square is selected
+     * @param isPressed is square selected
+     */
+    public void setisPressed(boolean isPressed)
+    {
+        this.isPressed = isPressed;
+    }
+    /**
+     * Set array position of pressed square
+     * @param arrayPosition array position of pressed square
+     */
+    public void setarrayPosition(int arrayPosition)
+    {
+        this.arrayPosition = arrayPosition;
+    }
+    /**
+     * Set to enable the movemenet of only the selected piece
+     * @param lock is movement locked
+     */
+    public void setlock(boolean lock)
+    {
+        this.lock = lock;
+    }
+}
 /*
+    //-- board layout --//
 ----board layout----
 -   y
 - x 0 1 2 3 4 5 6 7
@@ -9,151 +235,13 @@
 -   5 * * * * * * *
 -   6 * * * * * * *
 -   7 * * * * * * *
+----board layout----
+0  1  2  3  4  5  6  7
+8  9 10 11 12 13 14 15
+16 17 18 19 20 21 22 23
+24 25 26 27 28 29 30 31
+32 33 34 35 36 37 38 39
+40 41 42 43 44 45 46 47
+48 49 50 51 52 53 54 55
+56 57 58 59 60 61 62 63
 */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.event.ActionListener;
-
-public class Board implements ActionListener
-{
-    JFrame a = new JFrame(); // Create a blank window
-    JPanel panel = new JPanel(); // Create a panel
-    GridLayout layout = new GridLayout(8,8); // create an 8x8 grid layout
-    boolean isPressed = false;
-    int arrayPosition;
-    int yPosition = arrayPosition/8;
-    int xPosition = (arrayPosition%8)*8;
-    Square[] square = new Square[64]; // Init 64 squares
-    public Board()
-    {
-        a.setContentPane(panel); // Use panel on Window
-        panel.setLayout(layout); // Set layout
-        a.setVisible(true); // Make it visible
-        a.setTitle("Draughts"); // Change window title
-        a.setSize(800,800); // Change window size
-        a.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // exit program on close
-        a.setResizable(false); // Make the window non-resizable
-    }
-    /**
-    * Creates 64 squares, sets their colour and arranges them in an 8x8 grid.
-    */
-    void loadSquares()
-    {
-
-        //Square[] square = new Square[64]; // Init 64 squares
-        ImageIcon white = new ImageIcon("img/empty.png"); // Create white ImageIcon
-        ImageIcon black = new ImageIcon("img/empty2.png"); // Create black ImageIcon
-        ImageIcon white_init;
-        ImageIcon redPiece = new ImageIcon("img/red.png");
-        ImageIcon whitePiece = new ImageIcon("img/white.png");
-        int x = 0; // Create x coordinate
-        int y = 0; // Create y coordinate
-        String pieceType = Square.RED;
-        white_init = redPiece;
-        for(int i = 0;i<64;i=i+8)
-        {
-            for(int a = i;a<i+8;a+=2)
-            {
-                square[a] = new Square(black,x,y,a,Square.NONE); // Add a black square
-                panel.add(square[a].button); // Add square to Jpanel
-                square[a+1] = new Square(white_init,x+1,y,a+1,pieceType); // Add a white square
-                panel.add(square[a+1].button); // Add square to Jpanel
-                x+=2; // Added 2 squares, so x=x+2
-            }
-            x = 0;
-            i+=8; // Added a row of squares, so i=i+8
-
-            if(i>=8*5) 
-            {
-                pieceType = Square.WHITE;
-                white_init = whitePiece;
-            }
-            else if(i>=8*3) 
-            {
-                pieceType = Square.NONE; 
-                white_init = white;
-            } 
-
-            for(int a = i;a<i+8;a+=2)
-            {
-                square[a] = new Square(white_init,x,y+1,a,pieceType); // Add a white square
-                panel.add(square[a].button); // Add square to Jpanel
-                square[a+1] = new Square(black,x+1,y+1,a+1,Square.NONE); // Add a black square
-                panel.add(square[a+1].button); // Add square to Jpanel
-                x+=2; // Added 2 squares, so x=x+2
-            }
-            x = 0;
-            y+=2; // Added two rows, so y=y+2
-        }
-        for(int i = 0;i<64;i++)
-        {
-            square[i].button.addActionListener(this);
-        }
-        a.setVisible(true); // Make layout visible
-    }
-
-
-    public void actionPerformed(ActionEvent e)
-    {
-        for(int i = 0;i<64;i++)
-        {
-            if (e.getSource() == square[i].button)
-            {
-                if(isPressed == false)
-                    {
-                        if(square[i].canMove() == true)
-                        {
-                            square[i].SetPosibleMoves(this);
-                            for(int a = 0;a<2;a++)
-                            {
-                                if(square[i].canMoveTo(getSquare(square[i].getcanMoveTo(a))) == true)
-                                {
-                                    isPressed = true;
-                                    arrayPosition = square[i].getArrayPosition();
-                                    highlight(square[i].getcanMoveTo(a));  
-                                }
-                            }
-                        }
-                    }
-                else 
-                {
-                    for(int a = 0;a<2;a++)
-                        if(square[square[arrayPosition].getcanMoveTo(a)].gethighlighted() == true)
-                        {
-                            setToWhite(square[arrayPosition].getcanMoveTo(a));
-                            square[square[arrayPosition].getcanMoveTo(a)].setPiece("NONE");
-                        }
-                    if(square[arrayPosition].canMoveTo(square[i]) == true)
-                    {
-                        square[arrayPosition].moveTo(square[i],this);
-                    }
-                    isPressed = false;
-                }
-            }
-            
-        }
-
-    }
-    public void highlight(int arrayLocation)
-    {
-        square[arrayLocation].setHighlighted(true);
-        ImageIcon selected = new ImageIcon("img/selected.png");
-        square[arrayLocation].button.setIcon(selected);
-    }
-    public void setToWhite(int arrayLocation)
-    {
-        square[arrayLocation].setHighlighted(false);
-        ImageIcon white = new ImageIcon("img/empty.png");
-        square[arrayLocation].button.setIcon(white);
-    }
-    public void updateScreen()
-    {
-        a.setVisible(true); // Make layout visible
-    }
-    public Square getSquare(int i)
-    {
-        return square[i];
-    }
-
-}
