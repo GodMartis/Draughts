@@ -48,10 +48,10 @@ public class Board implements ActionListener
         String pieceType = "RED";
         piece = redPiece;
         // add all squares to the board
-        for(int i = 0;i<64;i=i+8)
+        for(int i=0;i<64;i=i+8)
         {
             // add a row of squares
-            for(int a = i;a<i+8;a+=2)
+            for(int a=i;a<i+8;a+=2)
             {
                 square[a] = new Square(black,x,y,a,"NONE"); 
                 panel.add(square[a].button); 
@@ -72,7 +72,7 @@ public class Board implements ActionListener
                 piece = white;
             } 
             // add a row of squares
-            for(int a = i;a<i+8;a+=2)
+            for(int a=i;a<i+8;a+=2)
             {
                 square[a] = new Square(piece,x,y+1,a,pieceType); 
                 panel.add(square[a].button);
@@ -84,7 +84,7 @@ public class Board implements ActionListener
             y+=2;
         }
         // add an ActionListener to each square
-        for(int i = 0;i<64;i++)
+        for(int i=0;i<64;i++)
         {
             square[i].button.addActionListener(this);
         }
@@ -95,7 +95,7 @@ public class Board implements ActionListener
      */
     public void actionPerformed(ActionEvent e)
     {
-        for(int i = 0;i<64;i++)
+        for(int i=0;i<64;i++)
         {
             if (e.getSource() == square[i].button)
             {
@@ -160,7 +160,7 @@ public class Board implements ActionListener
     public void secondClick(int i)
     {
         boolean isHighlighted = false;
-        for(int a = 0;a<2;a++)
+        for(int a=0;a<2;a++)
             if(square[square[arrayPosition].getcanMoveTo(a)].gethighlighted() == true)
             {
                 if(lock==false)
@@ -189,14 +189,16 @@ public class Board implements ActionListener
     {
         return square[i];
     }
+
         //-- Mutators --//
+
     /**
      * Set which player goes next
      * @param pieceType piece which goes next turn
      */
-    public void set_turn_pieceType(String pieceType)
+    public void set_turn_pieceType(String turn_pieceType)
     {
-        turn_pieceType = pieceType;
+        this.turn_pieceType = turn_pieceType;
     }
     /**
      * Set if square is selected
@@ -225,23 +227,25 @@ public class Board implements ActionListener
 }
 /*
     //-- board layout --//
-----board layout----
--   y
-- x 0 1 2 3 4 5 6 7
--   1 * * * * * * *
--   2 * * * * * * *
--   3 * * * * * * *
--   4 * * * * * * *
--   5 * * * * * * *
--   6 * * * * * * *
--   7 * * * * * * *
-----board layout----
-0  1  2  3  4  5  6  7
-8  9 10 11 12 13 14 15
-16 17 18 19 20 21 22 23
-24 25 26 27 28 29 30 31
-32 33 34 35 36 37 38 39
-40 41 42 43 44 45 46 47
-48 49 50 51 52 53 54 55
-56 57 58 59 60 61 62 63
+
+    ----board layout----
+    -   y
+    - x 0 1 2 3 4 5 6 7
+    -   1 * * * * * * *
+    -   2 * * * * * * *
+    -   3 * * * * * * *
+    -   4 * * * * * * *
+    -   5 * * * * * * *
+    -   6 * * * * * * *
+    -   7 * * * * * * *
+
+    ----board layout----
+    0  1  2  3  4  5  6  7
+    8  9 10 11 12 13 14 15
+    16 17 18 19 20 21 22 23
+    24 25 26 27 28 29 30 31
+    32 33 34 35 36 37 38 39
+    40 41 42 43 44 45 46 47
+    48 49 50 51 52 53 54 55
+    56 57 58 59 60 61 62 63
 */
