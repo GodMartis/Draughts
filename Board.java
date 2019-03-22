@@ -36,7 +36,6 @@ public class Board implements ActionListener
      */
     void loadSquares()
     {
-
         ImageIcon white = new ImageIcon("img/empty.png");
         ImageIcon black = new ImageIcon("img/empty2.png"); 
         ImageIcon redPiece = new ImageIcon("img/red.png");
