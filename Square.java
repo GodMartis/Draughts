@@ -13,7 +13,7 @@ public class Square
     private int arrayPosition;
     private int yPosition = arrayPosition/8;
     private int xPosition = (arrayPosition%8)*8;
-    JButton button;
+    private JButton button;
     private boolean[] jump = new boolean[2];
     private int[] canMoveTo = new int[2];
 
@@ -137,19 +137,21 @@ public class Square
                 canMoveTo[i] = (yPos)*8+xpos;
                 jump[i] = true;
                 if(xpos>7 || xpos<0 || yPos>7 || xpos<0)
-                    {
+                {
                     if(i==1)
                         canMoveTo[1] = canMoveTo[0];
                     else
                         change = true;
                     jump[i] = false;
-                    }
+                }
             }
         }
         if(change == true)
             canMoveTo[0] = canMoveTo[1];
-        if(jump[0] == true && jump[1] == false && canMoveTo(board.getSquare(canMoveTo[0])) == true) canMoveTo[1] = canMoveTo[0];
-        if(jump[1] == true && jump[0] == false && canMoveTo(board.getSquare(canMoveTo[1])) == true) canMoveTo[0] = canMoveTo[1];
+        if(jump[0] == true && jump[1] == false && canMoveTo(board.getSquare(canMoveTo[0])) == true) 
+            canMoveTo[1] = canMoveTo[0];
+        if(jump[1] == true && jump[0] == false && canMoveTo(board.getSquare(canMoveTo[1])) == true) 
+            canMoveTo[0] = canMoveTo[1];
 
     }
     /**
@@ -181,17 +183,17 @@ public class Square
         if(pieceType == turn_pieceType)
             return false;
         if(pieceType=="WHITE")
-            {
-                y=0;
-            }
+        {
+            y=0;
+        }
         else if(pieceType=="RED")
-            {
-                y=7;
-            }
+        {
+            y=7;
+        }
         else 
             return false;
         if (yPosition == y)
-                return false;
+            return false;
         return true;
     }
 
@@ -254,6 +256,13 @@ public class Square
     public boolean getMovementLocked()
     {
         return movementLocked;
+    }
+    /**
+     * @return button object
+     */
+    public JButton getButton()
+    {
+        return button;
     }
 
         //-- Mutators --//

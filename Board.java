@@ -53,9 +53,9 @@ public class Board implements ActionListener
             for(int a=i;a<i+8;a+=2)
             {
                 square[a] = new Square(black,x,y,a,"NONE"); 
-                panel.add(square[a].button); 
+                panel.add(square[a].getButton()); 
                 square[a+1] = new Square(piece,x+1,y,a+1,pieceType); 
-                panel.add(square[a+1].button); 
+                panel.add(square[a+1].getButton()); 
                 x+=2; 
             }
             x=0;
@@ -74,9 +74,9 @@ public class Board implements ActionListener
             for(int a=i;a<i+8;a+=2)
             {
                 square[a] = new Square(piece,x,y+1,a,pieceType); 
-                panel.add(square[a].button);
+                panel.add(square[a].getButton());
                 square[a+1] = new Square(black,x+1,y+1,a+1,"NONE");
-                panel.add(square[a+1].button); 
+                panel.add(square[a+1].getButton()); 
                 x+=2; 
             }
             x=0;
@@ -85,7 +85,7 @@ public class Board implements ActionListener
         // add an ActionListener to each square
         for(int i=0;i<64;i++)
         {
-            square[i].button.addActionListener(this);
+            square[i].getButton().addActionListener(this);
         }
         frame.setVisible(true);
     }
@@ -96,7 +96,7 @@ public class Board implements ActionListener
     {
         for(int i=0;i<64;i++)
         {
-            if (e.getSource() == square[i].button)
+            if (e.getSource() == square[i].getButton())
             {
                 if(isPressed == false)
                     {
@@ -119,7 +119,7 @@ public class Board implements ActionListener
     {
         square[arrayLocation].setHighlighted(true);
         ImageIcon selected = new ImageIcon("img/selected.png");
-        square[arrayLocation].button.setIcon(selected);
+        square[arrayLocation].getButton().setIcon(selected);
     }
     /**
      * Set square to white
@@ -129,7 +129,7 @@ public class Board implements ActionListener
     {
         square[arrayLocation].setHighlighted(false);
         ImageIcon white = new ImageIcon("img/empty.png");
-        square[arrayLocation].button.setIcon(white);
+        square[arrayLocation].getButton().setIcon(white);
     }
     /**
      * Selects piece to move(if movement is possible) and sets possible moves
