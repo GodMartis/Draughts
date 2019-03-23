@@ -258,7 +258,7 @@ public class Square
         return movementLocked;
     }
     /**
-     * @return button object
+     * @return JButton object
      */
     public JButton getButton()
     {
